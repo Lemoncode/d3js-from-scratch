@@ -1,7 +1,7 @@
 {
-  "name": "d3js-basic-map",
+  "name": "d3js-map-interaction",
   "version": "1.0.0",
-  "description": "D3.js Basic Map Demo",
+  "description": "D3.js Map Interaction Demo",
   "scripts": {
     "start": "webpack-dev-server --config=webpack.dev.js",
     "build:dev": "rimraf dist && webpack --config webpack.dev.js",
