@@ -13,12 +13,12 @@ const card = d3
   .select("#root")
   .append("div")
   .attr("class", "card")
+
+const svg = card
+  .append("svg")
   .attr("width", "100%")
   .attr("height", "100%")
   .attr("viewBox", `0 0 ${width} ${height}`);
-
-const svg = card
-  .append("svg");
 
 const xScale = d3
   .scaleLinear()

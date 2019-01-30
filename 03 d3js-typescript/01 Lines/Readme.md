@@ -112,9 +112,9 @@ const svg = card
 
 const svg = card
   .append("svg")
-     .attr("width", "100%")      
-     .attr("height", "100%");
-+      .attr("viewBox", `0 0 ${width} ${height}`)
+    .attr("width", "100%")
+    .attr("height", "100%")
++   .attr("viewBox", `0 0 ${width} ${height}`);
 ```
 
 -  Let's import now the data.
@@ -202,4 +202,9 @@ svg
     .attr("stroke", "black");
     ;
 ```
+
+- Now we got the basic chart, the lines are cut for
+some values, let's add some padding.
+
+
 
