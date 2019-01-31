@@ -322,12 +322,12 @@ const xScale = d3
 -  .scaleLinear()
 +  .scaleTime()
 -  .domain([0, 11]) // data input, months, 0..11
-+  .domain([new Date(2018, 0), new Date(2018, 11)]) // Range Jan to Dec 2019 
++  .domain([new Date(2018, 0), new Date(2018, 11)]) // Range Jan to Dec 2019
   .range([0, width]); // pixels
 ```
 
 - If we run this it will fail, because the lineCreator is using numeric indexes
-and it should return dates. Let's make an update
+  and it should return dates. Let's make an update
 
 ```diff
 const lineCreator = d3
@@ -335,4 +335,62 @@ const lineCreator = d3
 -  .x((d, i) => xScale(i)) // data and array index, x Axis is month
 +  .x((d, i) => xScale(new Date(2018,i))) // data and array index, x Axis is month
   .y(d => yScale(d));
+```
+
+- Now let's display more lines in the chart (min, max, avg temperatures).
+
+> Excercise: one way of doing this is to import the series and
+> add a lineCreator per serie, Let's give a try (to do at classroom).
+
+- Let's go for a more elegant way: Create a structure to hold each serie and
+  create an array of that struture (see _linechart.data.ts_).
+
+Let's import this serie:
+
+```diff
+import { line } from "d3-shape";
+- import { avgTemp } from "./linechart.data";
++ import { malagaStats } from "./linechart.data";
+```
+
+- Now to calculate the min and max for the Y axis, we can combine
+  the three values array and get the min and max.
+
+```diff
+const yScale = d3
+  .scaleLinear()
+-  .domain(d3.extent(avgTemp)) // Temperatures, extent calculates min and max from array
++  .domain(d3.extent(malagaStats.reduce((acc, s) => acc.concat(s.values), [])))
+  .range([height, 0]); // pixels, must upside down, Y (0,0) in SVG is upper corner
+```
+
+- Now it's time to draw the three series:
+
+```diff
+- svg
+-  .append("path")
+-  .datum(avgTemp)
+-  .attr("d", lineCreator)
+-  .attr("fill", "none")
+-  .attr("stroke-width", "5px")
+-  .attr("stroke", "black");
+
++ svg
++  .selectAll("path")
++  .data(malagaStats, (d: TempStat) => d.id)
++  .enter()
++  .append("path")
++  .attr("d", d => lineCreator(d.values))
++  .attr("fill", "none")
++  .attr("stroke-width", "3px")
++  .attr("stroke", "black");
+```
+
+- If we run the sample we can see the three lines, but... what about differentiating
+  them with different colors. 
+
+> Exercise create a function to decide color based on the type of measure (min, max average)
+
+```diff
+
 ```

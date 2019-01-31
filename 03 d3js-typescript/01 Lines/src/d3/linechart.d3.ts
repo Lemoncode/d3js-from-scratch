@@ -1,9 +1,10 @@
 import { select } from "d3-selection";
 import { scaleLinear, scaleTime } from "d3-scale";
 import { line } from "d3-shape";
-import { avgTemp } from "./linechart.data";
+import { malagaStats, TempStat } from "./linechart.data";
 import { axisBottom, axisLeft } from "d3-axis";
 import { extent } from "d3-array";
+import { accessSync } from "fs";
 
 const d3 = { select, scaleLinear, scaleTime, extent, line, axisBottom, axisLeft };
 
@@ -29,8 +30,8 @@ const xScale = d3
 
 const yScale = d3
   .scaleLinear()
-  .domain(d3.extent(avgTemp)) // Temperatures, extent calculates min and max from array
-  .range([height, 0]); // pixels, must upside down, Y (0,0) in SVG is upper corner
+  .domain(d3.extent(malagaStats.reduce((acc, s) => acc.concat(s.values), [])))
+  .range([height, 0]);
 
 const lineCreator = d3
   .line<number>()
@@ -41,6 +42,7 @@ const lineCreator = d3
 // on we will got for a more ellaborated solution
 // We pass data
 // path, attribute "d" each point in the path
+/*
 svg
   .append("path")
   .datum(avgTemp)
@@ -48,6 +50,17 @@ svg
   .attr("fill", "none")
   .attr("stroke-width", "5px")
   .attr("stroke", "black");
+*/
+svg
+  .selectAll("path")
+  .data(malagaStats, (d: TempStat) => d.id)
+  .enter()
+  .append("path")
+  .attr("d", d => lineCreator(d.values))
+  .attr("fill", "none")
+  .attr("stroke-width", "3px")
+  .attr("stroke", "black");
+
 const axisGroup = svg.append("g");
 
 // Y Axis: call axisLeft helper and pass the scale
