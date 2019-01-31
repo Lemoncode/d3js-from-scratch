@@ -387,10 +387,49 @@ const yScale = d3
 ```
 
 - If we run the sample we can see the three lines, but... what about differentiating
-  them with different colors. 
+  them with different colors.
 
 > Exercise create a function to decide color based on the type of measure (min, max average)
 
+Let's import _scaleOrdinal_ and _ChromaticScheme_
+
 ```diff
+import { select } from "d3-selection";
+- import { scaleLinear, scaleTime } from "d3-scale";
++ import { scaleLinear, scaleTime, scaleOrdinal } from "d3-scale";
++ import { schemeAccent } from "d3-scale-chromatic"
+import { line } from "d3-shape";
+
+// ...
+
+- const d3 = { select, scaleLinear, scaleTime, extent, line, axisBottom, axisLeft };
++ const d3 = { select, scaleLinear, scaleTime, extent, line, axisBottom, axisLeft, scaleOrdinal, schemeAccent };
+
+```
+
+- Let's create a color scale
+
+```diff
+const yScale = d3
+  .scaleLinear()
+  .domain(d3.extent(malagaStats.reduce((acc, s) => acc.concat(s.values), [])))
+  .range([height, 0]);
+
++ const colorScale = d3.scaleOrdinal(d3.schemeAccent);
+```
+
+- Now let's apply this colorScale into the path element
+
+```diff
+svg
+  .selectAll("path")
+  .data(malagaStats, (d: TempStat) => d.id)
+  .enter()
+  .append("path")
+  .attr("d", d => lineCreator(d.values))
+  .attr("fill", "none")
+  .attr("stroke-width", "3px")
+-  .attr("stroke", "black");
++  .attr("stroke", d => colorScale(d.id));
 
 ```

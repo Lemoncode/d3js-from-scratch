@@ -1,12 +1,23 @@
 import { select } from "d3-selection";
-import { scaleLinear, scaleTime } from "d3-scale";
+import { scaleLinear, scaleTime, scaleOrdinal } from "d3-scale";
+import { schemeAccent } from "d3-scale-chromatic";
 import { line } from "d3-shape";
 import { malagaStats, TempStat } from "./linechart.data";
 import { axisBottom, axisLeft } from "d3-axis";
 import { extent } from "d3-array";
 import { accessSync } from "fs";
 
-const d3 = { select, scaleLinear, scaleTime, extent, line, axisBottom, axisLeft };
+const d3 = {
+  select,
+  scaleLinear,
+  scaleTime,
+  extent,
+  line,
+  axisBottom,
+  axisLeft,
+  scaleOrdinal,
+  schemeAccent,
+};
 
 const width = 500;
 const height = 300;
@@ -33,6 +44,8 @@ const yScale = d3
   .domain(d3.extent(malagaStats.reduce((acc, s) => acc.concat(s.values), [])))
   .range([height, 0]);
 
+const colorScale = d3.scaleOrdinal(d3.schemeAccent);
+
 const lineCreator = d3
   .line<number>()
   .x((d, i) => xScale(new Date(2018, i))) // data and array index, x Axis is month
@@ -42,15 +55,6 @@ const lineCreator = d3
 // on we will got for a more ellaborated solution
 // We pass data
 // path, attribute "d" each point in the path
-/*
-svg
-  .append("path")
-  .datum(avgTemp)
-  .attr("d", lineCreator)
-  .attr("fill", "none")
-  .attr("stroke-width", "5px")
-  .attr("stroke", "black");
-*/
 svg
   .selectAll("path")
   .data(malagaStats, (d: TempStat) => d.id)
@@ -59,7 +63,7 @@ svg
   .attr("d", d => lineCreator(d.values))
   .attr("fill", "none")
   .attr("stroke-width", "3px")
-  .attr("stroke", "black");
+  .attr("stroke", d => colorScale(d.id));
 
 const axisGroup = svg.append("g");
 
