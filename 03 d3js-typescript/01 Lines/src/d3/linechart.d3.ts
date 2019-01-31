@@ -1,11 +1,11 @@
 import { select } from "d3-selection";
-import { scaleLinear } from "d3-scale";
+import { scaleLinear, scaleTime } from "d3-scale";
 import { line } from "d3-shape";
 import { avgTemp } from "./linechart.data";
 import { axisBottom, axisLeft } from "d3-axis";
 import { extent } from "d3-array";
 
-const d3 = { select, scaleLinear, extent, line, axisBottom, axisLeft };
+const d3 = { select, scaleLinear, scaleTime, extent, line, axisBottom, axisLeft };
 
 const width = 500;
 const height = 300;
@@ -23,8 +23,8 @@ const svg = card
   .attr("viewBox", `${-padding} ${-padding} ${width + 2 * padding} ${height + 2 * padding}`);
 
 const xScale = d3
-  .scaleLinear()
-  .domain([0, 11]) // data input, months, 0..11
+  .scaleTime()
+  .domain([new Date(2018, 0), new Date(2018, 11)]) // Range Jan to Dec 2019
   .range([0, width]); // pixels
 
 const yScale = d3
@@ -34,7 +34,7 @@ const yScale = d3
 
 const lineCreator = d3
   .line<number>()
-  .x((d, i) => xScale(i)) // data and array index, x Axis is month
+  .x((d, i) => xScale(new Date(2018, i))) // data and array index, x Axis is month
   .y(d => yScale(d));
 
 // let's paint the line, we are going to add a single array, later

@@ -302,4 +302,37 @@ axisGroup.append('g')
 
 Now we get the X axis in the right place.
 
+- That was nice, but we are showing months indexes starting from zero
+  that's not very friendly, let's add a time scale for this.
 
+```diff
+import { select } from "d3-selection";
+- import { scaleLinear } from "d3-scale";
++ import { scaleLinear, scaleTime } from "d3-scale";
+
+- const d3 = { select, scaleLinear, extent, line, axisBottom, axisLeft };
++ const d3 = { select, scaleLinear, scaleTime, extent, line, axisBottom, axisLeft };
+```
+
+- Now we are going to setup our XScale as Scale time and
+  pass the domain values as dates.
+
+```diff
+const xScale = d3
+-  .scaleLinear()
++  .scaleTime()
+-  .domain([0, 11]) // data input, months, 0..11
++  .domain([new Date(2018, 0), new Date(2018, 11)]) // Range Jan to Dec 2019 
+  .range([0, width]); // pixels
+```
+
+- If we run this it will fail, because the lineCreator is using numeric indexes
+and it should return dates. Let's make an update
+
+```diff
+const lineCreator = d3
+  .line<number>()
+-  .x((d, i) => xScale(i)) // data and array index, x Axis is month
++  .x((d, i) => xScale(new Date(2018,i))) // data and array index, x Axis is month
+  .y(d => yScale(d));
+```
