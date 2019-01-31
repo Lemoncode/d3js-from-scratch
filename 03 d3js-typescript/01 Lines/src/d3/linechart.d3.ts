@@ -1,19 +1,20 @@
 import { select } from "d3-selection";
 import { scaleLinear } from "d3-scale";
-import {line} from 'd3-shape';
+import { line } from "d3-shape";
 import { avgTemp } from "./linechart.data";
+import { axisBottom, axisLeft } from "d3-axis";
 import { extent } from "d3-array";
 
-const d3 = { select, scaleLinear, extent, line };
+const d3 = { select, scaleLinear, extent, line, axisBottom, axisLeft };
 
 const width = 500;
 const height = 300;
-const padding = 20;
+const padding = 50;
 
 const card = d3
   .select("#root")
   .append("div")
-  .attr("class", "card")
+  .attr("class", "card");
 
 const svg = card
   .append("svg")
@@ -41,11 +42,19 @@ const lineCreator = d3
 // We pass data
 // path, attribute "d" each point in the path
 svg
-.append("path")
-.datum(avgTemp)
+  .append("path")
+  .datum(avgTemp)
   .attr("d", lineCreator)
   .attr("fill", "none")
   .attr("stroke-width", "5px")
   .attr("stroke", "black");
-  ;
+const axisGroup = svg.append("g");
 
+// Y Axis: call axisLeft helper and pass the scale
+axisGroup.append("g").call(d3.axisLeft(yScale));
+
+// X axis:
+axisGroup
+  .append("g")
+  .attr("transform", `translate(0, ${height})`)
+  .call(d3.axisBottom(xScale));
