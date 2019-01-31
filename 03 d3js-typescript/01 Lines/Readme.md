@@ -142,6 +142,8 @@ import {avgTemp} from './linechart.data'
 - Now let's create an X scale that will map months (0..11) to pixels,
 and y scale that will map temperatures to pixels:
 
+_./src/d3/linechart.d3.ts_
+
 ```diff
 + import {extent} from 'd3-array';
 
@@ -168,6 +170,8 @@ const card = d3.select("#root")
 
 - Now let's define the chart line.
 
+_./src/d3/linechart.d3.ts_
+
 ```diff
 + import {line} from 'd3-shape';
 
@@ -188,6 +192,8 @@ const yScale = d3
 - It's time to draw the line, let's append the following code
 we are gong to append new data.
 
+_./src/d3/linechart.d3.ts_
+
 ```javascript
 // let's paint the line, we are going to add a single array, later
 // on we will got for a more ellaborated solution
@@ -206,5 +212,33 @@ svg
 - Now we got the basic chart, the lines are cut for
 some values, let's add some padding.
 
+The approach to follow, si to update values on the viewBox 
+definition.
+
+- Let's define a padding:
+
+_./src/d3/linechart.d3.ts_
+
+```diff
+const width = 500;
+const height = 300;
+
++ const padding = 20;
+```
+
+- We will keep the widht and height for the line creator, but we will
+add a padding on the left / top side, and to make the same on right / bottom
+we need to add the padding twice (original offset added, plus left / bottom padding).
 
 
+_./src/d3/linechart.d3.ts_
+
+```diff
+const svg = card
+  .append("svg")
+  .attr("width", "100%")
+  .attr("height", "100%")
+-  .attr("viewBox", `0 0 ${width} ${height}`);
++  .attr("viewBox", `${-padding} ${-padding} ${width + 2 * padding} ${height + 2 * padding}`);
+
+```

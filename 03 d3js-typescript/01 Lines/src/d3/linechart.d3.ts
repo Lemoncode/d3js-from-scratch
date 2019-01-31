@@ -8,6 +8,7 @@ const d3 = { select, scaleLinear, extent, line };
 
 const width = 500;
 const height = 300;
+const padding = 20;
 
 const card = d3
   .select("#root")
@@ -18,7 +19,7 @@ const svg = card
   .append("svg")
   .attr("width", "100%")
   .attr("height", "100%")
-  .attr("viewBox", `0 0 ${width} ${height}`);
+  .attr("viewBox", `${-padding} ${-padding} ${width + 2 * padding} ${height + 2 * padding}`);
 
 const xScale = d3
   .scaleLinear()
