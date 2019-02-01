@@ -193,5 +193,21 @@ startRealTimeDataV1(dataUpdated);
 - now we got the graphic changing in real time, but... couldn't it be nice to add 
 a transition for the values?
 
-```typescript
+```diff
++ import 'd3-transition';
+
+// (...)
+
+const dataUpdated = (newData : number[]) => {
+  // Update pattern
+  barGroup
+    .selectAll('rect')
+    .data(newData)
++     .transition()
++      .duration(750)    
+      .attr("y", d => scaleYPos(d))
+      .attr("height", d => height - scaleYPos(d))
+} 
+
+startRealTimeDataV1(dataUpdated);
 ```

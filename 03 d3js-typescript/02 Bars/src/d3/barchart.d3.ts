@@ -1,4 +1,5 @@
 import { select, selectAll } from "d3-selection";
+import 'd3-transition';
 import { scaleBand, scaleLinear } from "d3-scale";
 import { randomData, startRealTimeDataV1 } from "./barchart.data";
 
@@ -52,6 +53,8 @@ const dataUpdated = (newData : number[]) => {
   barGroup
     .selectAll('rect')
     .data(newData)
+      .transition()
+      .duration(750)        
       .attr("y", d => scaleYPos(d))
       .attr("height", d => height - scaleYPos(d))
 } 
