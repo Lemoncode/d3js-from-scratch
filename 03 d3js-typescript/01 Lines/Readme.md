@@ -431,5 +431,38 @@ svg
   .attr("stroke-width", "3px")
 -  .attr("stroke", "black");
 +  .attr("stroke", d => colorScale(d.id));
+```
 
+- That was fine, but what if we want to use the blue color for the low temps, the green for the average and red for the max,
+we can check colors available in this link:
+
+https://github.com/d3/d3-scale-chromatic/blob/master/README.md
+
+Let's change to more appropiate scheme category and play with the domain:
+
+```diff
+- import { schemeAccent } from "d3-scale-chromatic";
++ import { schemeAccent, schemeCategory10 } from "d3-scale-chromatic";
+
+// ...
+
+const d3 = {
+  select,
+  scaleLinear,
+  scaleTime,
+  extent,
+  line,
+  axisBottom,
+  axisLeft,
+  scaleOrdinal,
+  schemeAccent,
++  schemeCategory10,
+};
+
+```
+
+```diff
+- const colorScale = d3.scaleOrdinal(d3.schemeAccent);
++ const colorScale = d3.scaleOrdinal(d3.schemeCategory10)
++       .domain(['min', '', 'avg', 'max']);
 ```

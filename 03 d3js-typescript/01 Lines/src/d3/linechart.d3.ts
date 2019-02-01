@@ -1,6 +1,6 @@
 import { select } from "d3-selection";
 import { scaleLinear, scaleTime, scaleOrdinal } from "d3-scale";
-import { schemeAccent } from "d3-scale-chromatic";
+import { schemeAccent, schemeCategory10 } from "d3-scale-chromatic";
 import { line } from "d3-shape";
 import { malagaStats, TempStat } from "./linechart.data";
 import { axisBottom, axisLeft } from "d3-axis";
@@ -17,6 +17,7 @@ const d3 = {
   axisLeft,
   scaleOrdinal,
   schemeAccent,
+  schemeCategory10,
 };
 
 const width = 500;
@@ -44,7 +45,9 @@ const yScale = d3
   .domain(d3.extent(malagaStats.reduce((acc, s) => acc.concat(s.values), [])))
   .range([height, 0]);
 
-const colorScale = d3.scaleOrdinal(d3.schemeAccent);
+  const colorScale = d3.scaleOrdinal(d3.schemeCategory10)
+                        .domain(['min', '', 'avg', 'max']);
+;
 
 const lineCreator = d3
   .line<number>()
