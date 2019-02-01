@@ -45,3 +45,41 @@ barGroup
   .attr("y", d => scaleYPos(d))
   .attr("width", scaleXPos.bandwidth())
   .attr("height", d => height - scaleYPos(d))
+  .attr("fill", "url(#barGradient)");
+
+const dataUpdated = (newData : number[]) => {
+  // Update pattern
+  barGroup
+    .selectAll('rect')
+    .data(newData)
+      .attr("y", d => scaleYPos(d))
+      .attr("height", d => height - scaleYPos(d))
+} 
+
+startRealTimeDataV1(dataUpdated);
+
+
+// OPTIONAL
+// Gradient fill for the bars.
+const gradient = svg
+.append("defs")
+  .append("linearGradient")
+    .attr("id", "barGradient")
+    .attr("gradientUnits", "userSpaceOnUse")
+    .attr("x1", "0")
+    .attr("y1", height)
+    .attr("x2", "0")
+    .attr("y2", "0");
+gradient
+.append("stop")
+  .attr("offset", "0")
+  .attr("stop-color", "#185a9d");
+gradient
+.append("stop")
+  .attr("offset", "80%")
+  .attr("stop-color", "#43cea2");
+gradient
+.append("stop")
+  .attr("offset", "100%")
+  .attr("stop-color", "#43cea2");
+

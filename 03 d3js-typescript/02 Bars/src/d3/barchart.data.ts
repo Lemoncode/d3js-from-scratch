@@ -10,10 +10,10 @@ export let randomData = randomArrayGenerator(20);
 // Creamos un mecanismo para modifcar estos datos aleatorios cada segundo.
 // Simula una fuente de datos 'real-time'. Permitimos la suscripción de un
 // callback para informar a la visualización de que hubo modificaciones.
-export const startRealTimeDataV1 = (onDataChange: () => void) => {
+export const startRealTimeDataV1 = (onDataChange: (newData) => void) => {
   setInterval(() => {
     randomData = randomArrayGenerator(20);
-    onDataChange && onDataChange();
+    onDataChange && onDataChange(randomData);
   }, 1000);
 }
 

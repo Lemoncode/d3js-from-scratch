@@ -15,22 +15,22 @@ npm install
 _./src/d3/barchart.data.ts_
 
 ```typescript
-// Data array generator (random numbers)
+// Generador de datos aleatorios en formato de array de n posiciones.
 const randomArrayGenerator = n => Array.from({length: n}, () => Math.random());
 
 // Otra forma podría ser Array(n).fill(0).map(n => Math.random());
 
 
-// Singleton, initialize random data (20 elements)
+// Singleton inicializado con datos aleatorios. Array de 20 posiciones.
 export let randomData = randomArrayGenerator(20);
 
-// Create a mechanism to update random data each second,
-// simulate a real time data source, we just return a callback 
-// to subscribe on data changes
-export const startRealTimeDataV1 = (onDataChange: () => void) => {
+// Creamos un mecanismo para modifcar estos datos aleatorios cada segundo.
+// Simula una fuente de datos 'real-time'. Permitimos la suscripción de un
+// callback para informar a la visualización de que hubo modificaciones.
+export const startRealTimeDataV1 = (onDataChange: (newData) => void) => {
   setInterval(() => {
     randomData = randomArrayGenerator(20);
-    onDataChange && onDataChange();
+    onDataChange && onDataChange(randomData);
   }, 1000);
 }
 
@@ -129,4 +129,69 @@ barGroup
     .attr("y", d => scaleYPos(d))
     .attr("width", scaleXPos.bandwidth())
     .attr("height", d => height - scaleYPos()) // Remember Y coord start top on 0
+```
+
+- Let's add a nice gradiente to the bars.
+
+```typescript
+// OPTIONAL
+// Gradient fill for the bars.
+const gradient = svg
+  .append("defs")
+    .append("linearGradient")
+      .attr("id", "barGradient")
+      .attr("gradientUnits", "userSpaceOnUse")
+      .attr("x1", "0")
+      .attr("y1", height)
+      .attr("x2", "0")
+      .attr("y2", "0");
+gradient
+  .append("stop")
+    .attr("offset", "0")
+    .attr("stop-color", "#185a9d");
+gradient
+  .append("stop")
+    .attr("offset", "80%")
+    .attr("stop-color", "#43cea2");
+gradient
+  .append("stop")
+    .attr("offset", "100%")
+    .attr("stop-color", "#43cea2");
+```
+
+- And use it in our bar chart
+
+```diff
+barGroup
+.selectAll('rect')
+.data(randomData)
+.enter()
+.append("rect")
+  .attr("x", (d,i) => scaleXPos(i))
+  .attr("y", d => scaleYPos(d))
+  .attr("width", scaleXPos.bandwidth())
+  .attr("height", d => height - scaleYPos(d))
++  .attr("fill", "url(#barGradient)");
+```
+
+- If we refresh the browser we can see that data is changed, now let's go
+for real time updates. By default the mode to update is 'update' (enter is insert)
+
+```typescript
+const dataUpdated = (newData : number[]) => {
+  // Update pattern
+  barGroup
+    .selectAll('rect')
+    .data(newData)
+      .attr("y", d => scaleYPos(d))
+      .attr("height", d => height - scaleYPos(d))
+} 
+
+startRealTimeDataV1(dataUpdated);
+```
+
+- now we got the graphic changing in real time, but... couldn't it be nice to add 
+a transition for the values?
+
+```typescript
 ```
