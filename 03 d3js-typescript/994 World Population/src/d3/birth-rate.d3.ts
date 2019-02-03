@@ -2,7 +2,7 @@ import "d3-transition";
 import { select } from "d3-selection";
 import { geoNaturalEarth1, geoPath } from "d3-geo";
 import { interpolateGnBu, interpolateOrRd } from "d3-scale-chromatic";
-import { scaleLinear, scaleSqrt } from "d3-scale";
+import { scaleSqrt } from "d3-scale";
 import { json } from "d3-fetch";
 import { FeatureCollection, Geometry, Feature } from 'geojson';
 import { isNumber } from 'util';
