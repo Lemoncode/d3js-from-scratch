@@ -87,10 +87,15 @@ module.exports = {
           name: "[name].[ext]"
         }
       },
-      // Same for geo data sources
+      // Possible Data sources as files.
       {
-        test: /\.(geojson|topojson|json)?$/,
-        loader: "json-loader"
+        type: "javascript/auto",
+        test: /\.(geojson|topojson|json|tsv)?$/,
+        include: /data/,
+        loader: "file-loader",
+        options: {
+          name: "[name].[ext]"
+        }
       },
     ],
   },

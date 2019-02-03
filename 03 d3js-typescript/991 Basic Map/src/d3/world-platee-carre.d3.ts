@@ -1,6 +1,7 @@
 import { select } from "d3-selection";
-import { geoEquirectangular, geoPath, GeoPermissibleObjects } from "d3-geo";
+import { geoEquirectangular, geoPath } from "d3-geo";
 import { json } from "d3-fetch";
+import { FeatureCollection } from 'geojson';
 
 // (*)Lets define a width and height for the SVG user space
 // coordinate system (viewBox), also a padding to avoid
@@ -40,15 +41,9 @@ const plateeProjection = geoEquirectangular()
 const pathCreator = geoPath()
   .projection(plateeProjection);
 
-// (a) Finally, lets paint our path in the svg by loading
+// (*) Finally, lets paint our path in the svg by loading
 // locally the world geojson.
-const worldData = require("../data/world.geojson");
-svg.append("path")
-  .attr("d", pathCreator(worldData));
-
-// (b) As alternative, we can load the data remotely:
-// const url = "http://enjalot.github.io/wwsd/data/world/world-110m.geojson";
-// json<GeoPermissibleObjects>(url).then(geojson =>
-//   svg.append("path")
-//     .attr("d", pathCreator(geojson))
-// );
+json<FeatureCollection>(require("../data/world.geojson")).then((worldData => 
+  svg.append("path")
+    .attr("d", pathCreator(worldData))
+));
