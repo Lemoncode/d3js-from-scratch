@@ -2,10 +2,11 @@ import { mouse, extent, event } from "d3";
 import { select } from "d3-selection";
 import { geoConicConformalSpain } from "d3-composite-projections";
 import { geoPath } from "d3-geo";
-import { interpolateBlues } from "d3-scale-chromatic";
+import { interpolateReds } from "d3-scale-chromatic";
 import { scaleSqrt } from "d3-scale";
 import { json } from "d3-fetch";
 import { zoom } from "d3-zoom";
+import { range, ticks } from "d3-array";
 import { presimplify, simplify, feature } from "topojson";
 import { Topology, GeometryCollection, Objects } from 'topojson-specification';
 import { Feature, Geometry } from 'geojson';
@@ -47,20 +48,23 @@ const svg = card
 // to highlight regions on hover.
 const glowUrl = defineGlowEffect(svg.append("defs"));
 
-// (*) Lets prepare a group to be zoomable.
+// (*) Lets prepare a group to be zoomable. And a group for a
+// legend, out of the zoom.
 const zoomGroup = svg
+  .append("g");
+const legendGroup = svg
   .append("g");
 
 // Also, lets create a couple of groups whithin the zoom to
 // group regions and municipalities in different sections.
-const regionsGroup = zoomGroup
-  .append("g");
 const municipalitiesGroup = zoomGroup
+  .append("g");
+const regionsGroup = zoomGroup
   .append("g");
 
 // Now the zoom logic binded to the svg.
 const zoomCreator = zoom()
-  .scaleExtent([1, 10])
+  .scaleExtent([1, 15])
   .on("zoom", onZoom);
 
 svg.call(zoomCreator);
@@ -131,10 +135,11 @@ function onDataReady([mData, rData]: [Topology<MunicipalityData>, Topology<Regio
   // This time, instead of manually setting the domain,
   // let's compute it dynamically from the data.
   const densities = mData.objects.municipios.geometries.map(g => (g.properties.rate));
-  const densityLogScale = scaleSqrt().exponent(1/6)
-    .domain(extent(densities))
+  const densityExtent = extent(densities);
+  const densityScale = scaleSqrt().exponent(1/6)
+    .domain(densityExtent)
     .range([0, 1]);
-  const colorScale = (density: number) => interpolateBlues(densityLogScale(density || 0));
+  const colorScale = (density: number) => interpolateReds(densityScale(density || 0));
 
   // (*) Lets implement the ENTER pattern for each new municipality 
   // to be represented with a SVG path joined to its datum.
@@ -188,4 +193,51 @@ function onDataReady([mData, rData]: [Topology<MunicipalityData>, Topology<Regio
     select(this)
       .attr("filter", undefined);
   }
+
+  // ************************************************************************************
+  // (*) OPTIONAL - ¿Exercise? - Add a legend
+  const numPatches = 10;
+  const patchesData = Array(numPatches).fill(0).map((p,i) => densityScale.invert(i/(numPatches-1)))
+  const patchesHeight = 20;
+  const patchesWidth = 80;
+  const legendMargin = 20;
+
+  // Setup legend group position to lower right corner by using a transform-translate.
+  legendGroup
+    .attr("transform", `translate(${width - patchesWidth - legendMargin}, ${height - (patchesHeight * numPatches) - legendMargin})`)
+  
+  // Enter pattern for patches. Each patch will have a group.
+  const patches = legendGroup.selectAll("rect")
+    .data(patchesData)
+    .enter()
+    .append("g")
+      .attr("transform", (d, i) => `translate(0, ${patchesHeight * i})`)
+  patches.append("rect")
+    .attr("width", patchesWidth)
+    .attr("height", patchesHeight)
+    .attr("fill", colorScale)
+  patches.append("text")
+    .attr("transform", "translate(15)")
+    .attr("alignment-baseline", "text-before-edge")
+    .attr("fill", "white")
+    .text(d => Math.round(d).toLocaleString())
+
+      
+  // ************************************************************************************
+  // (*) OPTIONAL - ¿Exercise? - Add CCAA.
+  // Add Autonomous Communities in the map, just to group the 
+  // municipalities into regions. We have already loaded the file
+  // regions.topojson and have created a SVG group for that, just
+  // draw it in the map with D3.
+
+  const regions = feature(rData, rData.objects.ccaa);
+  console.log(regions)
+  regionsGroup.selectAll("path")
+    .data(regions.features)
+    .enter()
+    .append("path")
+      .attr("d", pathCreator)
+      .attr("fill", "none")
+      .style("stroke", "white")
+      .style("stroke-width", "1px");
 }
