@@ -171,16 +171,16 @@ Let's remove the current list, and create a new one
 +  padding: 0;
 + }
 + 
-+ li {
++ ul li {
 +  font: 200 20px/1.5 Helvetica, Verdana, sans-serif;
 +  border-bottom: 1px solid #ccc;
 + }
 + 
-+ li:last-child {
++ ul li:last-child {
 +  border: none;
 + }
 + 
-+ li a {
++ ul li a {
 +  text-decoration: none;
 +  color: #000;
 +  display: block;
@@ -193,7 +193,7 @@ Let's remove the current list, and create a new one
 +  transition: font-size 0.3s ease, background-color 0.3s ease;
 +}
 + 
-+li a:hover {
++ ul li a:hover {
 +  font-size: 30px;
 +  background: #f6f6f6;
 +}
